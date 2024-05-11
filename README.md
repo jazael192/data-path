@@ -1,1 +1,100 @@
 # data-path
+Módulo ALU (Arithmetic Logic Unit)
+Realiza operaciones aritméticas y lógicas básicas.
+Parámetros:
+   - entrada1: Entrada de datos 1 de 32 bits.
+   - entrada2: Entrada de datos 2 de 32 bits.
+   - selector: Selector de operación de 3 bits.
+Salidas:
+   - res: Resultado de la operación de 32 bits.
+   - zf: Bandera de cero (1 si el resultado es cero, 0 en otro caso).
+Lógica combinacional para determinar la operación basada en el selector.
+Realiza la operación correspondiente y establece la bandera de cero.
+     3'b000: res = entrada1 & entrada2;  // AND
+        3'b001: res = entrada1 | entrada2;  // OR
+        3'b010: res = entrada1 + entrada2;  // suma
+        3'b110: res = entrada1 - entrada2;  // Resta
+        3'b111: res = (entrada1 < entrada2) ? 1 : 0;  // Set on less than
+        default: 
+
+/////////////////////////////////////////////////////////////////////////////		
+		
+Módulo ALU Control
+Este módulo se encarga de generar la señal de control para la ALU en base
+al código de función de la instrucción y a la señal de control de la UC.
+Entradas:
+   - func_code: Código de función de 6 bits de la instrucción.
+   - UC_signal: Señal de control de 3 bits de la UC.
+Salidas:
+   - ALU_signal: Señal de control de 3 bits para la ALU.
+  
+/////////////////////////////////////////////////////////////////////////////
+  
+  Módulo Banco de Registros
+ Este módulo implementa un banco de registros de 32 registros de 32 bits cada uno.
+Entradas:
+   - read_register_1: Índice del registro a leer para la primera entrada de la ALU.
+   - read_register_2: Índice del registro a leer para la segunda entrada de la ALU.
+   - write_data: Datos a escribir en el registro seleccionado.
+   - write_register: Índice del registro donde se va a escribir.
+   - reg_write: Señal de escritura en el registro.
+Salidas:
+   - read_data_1: Datos leídos desde el registro para la primera entrada de la ALU.
+   - read_data_2: Datos leídos desde el registro para la segunda entrada de la ALU.
+ 
+///////////////////////////////////////////////////////////////////////////// 
+ 
+  Módulo Multiplexor 2 a 1
+ Este módulo implementa un multiplexor de 2 a 1.
+Entradas:
+   - data_mem: Datos provenientes de la memoria.
+   - data_alu: Datos provenientes de la ALU.
+   - MemToReg_m: Señal de control para seleccionar la entrada.
+Salidas:
+   - output_data: Datos de salida seleccionados por el multiplexor.
+ 
+///////////////////////////////////////////////////////////////////////////// 
+Módulo RAM
+ Este módulo implementa una memoria RAM simple de 64 palabras de 32 bits cada una.
+Entradas:
+   - dir: Dirección de la palabra de memoria a acceder.
+   - entrada1: Datos a escribir en la memoria.
+   - sel: Señal de control para selección de escritura/lectura.
+Salidas:
+   - salida: Datos leídos desde la memoria.
+
+
+/////////////////////////////////////////////////////////////////////////////
+ Módulo UC (Control Unit)
+ Este módulo implementa la Unidad de Control (UC) que genera señales de control
+ para el datapath en base al opcode de la instrucción.
+Entradas:
+   - opcode: Opcode de la instrucción.
+Salidas:
+   - MemToReg: Señal de control para escritura en registro desde memoria.
+   - RegWrite: Señal de control para escritura en registro desde ALU.
+   - MemToWrite: Señal de control para escritura en memoria desde ALU.
+   - ALUOp: Señal de control para operación de la ALU.
+   
+////////////////////////////////////////////////////////////////////////////////
+ Módulo Banco de Registros
+ Este módulo implementa un banco de registros de 32 registros de 32 bits cada uno.
+ Entradas:
+   - read_register_1: Índice del primer registro a leer.
+   - read_register_2: Índice del segundo registro a leer.
+   - write_data: Datos a escribir en el registro seleccionado.
+   - write_register: Índice del registro en el que se escribirán los datos.
+   - reg_write: Señal de control para escritura en el banco de registros.
+ Salidas:
+   - read_data_1: Datos leídos desde el primer registro.
+   - read_data_2: Datos leídos desde el segundo registro.
+  
+ ////////////////////////////////////////////////////////////////////////////////
+ Módulo Datapath
+ Este módulo implementa un camino de datos básico y su controlador.
+ El camino de datos incluye una ALU, un banco de registros, una RAM y un
+ multiplexor, todos conectados de acuerdo a la instrucción recibida.
+Entradas:
+   - instruccion_r: Instrucción de 32 bits que indica la operación a realizar.
+Salidas:
+   - tr_zf: Bandera de cero generada por la ALU.
